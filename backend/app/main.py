@@ -159,3 +159,10 @@ async def get_orders(
     db: AsyncSession = Depends(get_db)
 ):
     return await crud.get_user_orders(db, current_user.id)
+
+
+# Health check endpoint
+@app.get("/health", tags=["health"])
+async def health_check_route(db: AsyncSession = Depends(get_db)):
+    from .health import health_check_endpoint
+    return await health_check_endpoint(db)
