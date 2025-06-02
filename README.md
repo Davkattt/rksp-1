@@ -61,8 +61,8 @@ A full-stack web application for selling online courses with user authentication
 
 #### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd course-marketplace
+git clone https://github.com/Davkattt/rksp-1
+cd rksp-1
 ```
 
 #### 2. Run with Docker Compose
@@ -223,8 +223,8 @@ npm run dev
 
 #### 1. Клонирование репозитория
 ```bash
-git clone <repository-url>
-cd course-marketplace
+git clone https://github.com/Davkattt/rksp-1
+cd rksp-1
 ```
 
 #### 2. Настройка бэкенда
