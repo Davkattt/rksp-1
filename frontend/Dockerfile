@@ -11,8 +11,8 @@ RUN adduser -S nextjs -u 1001
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install ALL dependencies (including dev dependencies for vite)
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -26,7 +26,7 @@ EXPOSE 5173
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5173/ || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:5173/ || exit 1
 
 # Start the application
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
