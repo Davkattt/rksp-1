@@ -2,100 +2,51 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: course-store-db
+  db:
+    image: postgres:15
     environment:
+      POSTGRES_DB: course_marketplace
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: course_store
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - course-store-network
-    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Redis (optional - for future caching)
-  redis:
-    image: redis:7-alpine
-    container_name: course-store-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - course-store-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
-  # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: course-store-backend
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/course_store
-      - SECRET_KEY=course-store-production-secret-key-change-this
-      - ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=60
     ports:
       - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/course_marketplace
+      SECRET_KEY: your-secret-key-change-this-in-production
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-    networks:
-      - course-store-network
-    restart: unless-stopped
     volumes:
       - ./backend:/app
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: course-store-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     environment:
       - VITE_API_URL=http://localhost:8000
-    ports:
-      - "80:80"
     depends_on:
-      backend:
-        condition: service_healthy
-    networks:
-      - course-store-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - backend
 
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-
-networks:
-  course-store-network:
-    driver: bridge

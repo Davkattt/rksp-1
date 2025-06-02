@@ -55,11 +55,9 @@ A full-stack web application for selling online courses with user authentication
 
 ### Prerequisites
 
-- **Node.js** (v18 or higher)
-- **Python** (v3.8 or higher)
-- **PostgreSQL** database
+- **Docker** and **Docker Compose**
 
-### Installation & Setup
+### Quick Start with Docker (Recommended)
 
 #### 1. Clone the Repository
 ```bash
@@ -67,7 +65,36 @@ git clone <repository-url>
 cd course-marketplace
 ```
 
-#### 2. Backend Setup
+#### 2. Run with Docker Compose
+```bash
+# Start all services (database, backend, frontend)
+docker-compose up --build
+```
+
+That's it! The application will be available at:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+#### 3. Stop the Application
+```bash
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clears database)
+docker-compose down -v
+```
+
+### Manual Installation (Alternative)
+
+If you prefer to run without Docker:
+
+#### Prerequisites for Manual Setup
+- **Node.js** (v18 or higher)
+- **Python** (v3.8 or higher)
+- **PostgreSQL** database
+
+#### 1. Backend Setup
 ```bash
 # Navigate to backend directory
 cd backend
@@ -89,7 +116,7 @@ pip install -r requirements.txt
 DATABASE_URL=postgresql+asyncpg://username:password@localhost/dbname
 ```
 
-#### 3. Database Setup
+#### 2. Database Setup
 ```bash
 # Create PostgreSQL database
 createdb course_marketplace
@@ -97,7 +124,7 @@ createdb course_marketplace
 # The application will automatically create tables on startup
 ```
 
-#### 4. Frontend Setup
+#### 3. Frontend Setup
 ```bash
 # Navigate to frontend directory
 cd ../frontend
@@ -106,7 +133,7 @@ cd ../frontend
 npm install
 ```
 
-#### 5. Running the Application
+#### 4. Running the Application
 
 **Backend (Terminal 1):**
 ```bash
@@ -119,11 +146,6 @@ uvicorn app.main:app --reload --port 8000
 cd frontend
 npm run dev
 ```
-
-The application will be available at:
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
 
 ### API Endpoints
 
