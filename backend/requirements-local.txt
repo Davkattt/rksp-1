@@ -1,0 +1,21 @@
+# Simplified requirements for local development with SQLite
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+pydantic==2.11.5
+pydantic[email]==2.11.5
+
+# Database - SQLite instead of PostgreSQL
+sqlalchemy==2.0.41
+aiosqlite==0.20.0
+
+# Authentication
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+
+# Environment and utilities
+python-dotenv==1.1.0
+python-dateutil==2.8.2
+
+# Additional utilities
+email-validator==2.1.0

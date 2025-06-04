@@ -1,18 +1,17 @@
-# backend/app/main.py - Modified for SQLite local development
+# backend/app/main_simple.py
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-# Import SQLite database configuration
-from .database_sqlite import get_db, create_all_tables, health_check
+from .database import get_db
 from . import crud, schemas, auth
 
-# Create FastAPI app
+# Simple FastAPI app without complex startup
 app = FastAPI(
-    title="Course Store API (Local SQLite)",
-    description="API для интернет-магазина курсов - Local Development",
+    title="Course Store API",
+    description="API для интернет-магазина курсов",
     version="1.0.0"
 )
 
@@ -33,11 +32,6 @@ app.add_middleware(
 )
 
 security = HTTPBearer()
-
-# Initialize database on startup
-@app.on_event("startup")
-async def startup_event():
-    await create_all_tables()
 
 # Helper function to get current user
 async def get_current_user(
@@ -65,22 +59,16 @@ async def get_current_user(
 @app.get("/", tags=["root"])
 async def read_root():
     return {
-        "message": "Course Store API is running! (Local SQLite)",
+        "message": "Course Store API is running!",
         "version": "1.0.0",
         "docs": "/docs",
-        "status": "OK",
-        "database": "SQLite"
+        "status": "OK"
     }
 
 # Health check endpoint
 @app.get("/health", tags=["health"])
-async def health_check_route():
-    db_health = await health_check()
-    return {
-        "status": "healthy",
-        "message": "API is working",
-        "database": db_health
-    }
+async def health_check():
+    return {"status": "healthy", "message": "API is working"}
 
 # Auth routes
 @app.post("/api/register", response_model=schemas.UserRead, tags=["auth"])
@@ -171,3 +159,10 @@ async def get_orders(
     db: AsyncSession = Depends(get_db)
 ):
     return await crud.get_user_orders(db, current_user.id)
+
+
+# Health check endpoint
+@app.get("/health", tags=["health"])
+async def health_check_route(db: AsyncSession = Depends(get_db)):
+    from .health import health_check_endpoint
+    return await health_check_endpoint(db)
