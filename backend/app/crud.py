@@ -104,7 +104,7 @@ async def create_order_from_cart(db: AsyncSession, user_id: int) -> Order:
     
     # Create order
     order = Order(user_id=user_id, total_amount=total_amount)
-    db.add(order)
+    await db.add(order)
     await db.flush()  # Get order ID
     
     # Create order items
@@ -114,7 +114,7 @@ async def create_order_from_cart(db: AsyncSession, user_id: int) -> Order:
             course_id=cart_item.course_id,
             price=cart_item.course.price
         )
-        db.add(order_item)
+        await db.add(order_item)
     
     # Clear cart
     await clear_cart(db, user_id)

@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Float, Text, DateTime, ForeignKe
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from datetime import datetime
-from .database import Base
+from .database_sqlite import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -127,25 +127,6 @@ class Review(Base):
     def __repr__(self):
         return f"<Review(id={self.id}, course_id={self.course_id}, user_id={self.user_id}, rating={self.rating})>"
 
-# Model registry for easy access
-MODEL_REGISTRY = {
-    "User": User,
-    "Course": Course,
-    "Order": Order,
-    "OrderItem": OrderItem,
-    "CartItem": CartItem,
-    "Category": Category,
-    "Review": Review,
-}
-
-def get_model(model_name: str):
-    """Get model class by name"""
-    return MODEL_REGISTRY.get(model_name)
-
-def get_all_models():
-    """Get all model classes"""
-    return list(MODEL_REGISTRY.values())
-
 # Export all models
 __all__ = [
     "Base",
@@ -156,7 +137,4 @@ __all__ = [
     "CartItem",
     "Category",
     "Review",
-    "MODEL_REGISTRY",
-    "get_model",
-    "get_all_models"
 ]
